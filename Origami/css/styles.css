@@ -1,0 +1,217 @@
+body {
+
+	font-family: Verdana;
+	margin: 0 auto;
+	width: 900px;
+
+}
+
+@media(max-width: 1325px) {
+
+	body {
+
+		width: auto;
+
+	}
+
+}
+
+a,
+.footer_link {
+
+	text-decoration: none;
+	color: white;
+
+}
+
+/* ------------------- Encabezado ------------------- */
+
+#encabezado {
+
+	background-color: black;
+	margin: auto;
+	display: flex;
+	flex-direction: row;
+
+}
+
+#encabezado img {
+
+	width: 50%;
+
+}
+
+#enlaces {
+
+	font-size: 200%;
+	text-align: center;
+	display: flex;
+	flex-direction: column;
+	margin: auto;
+
+}
+
+#enlaces a {
+
+	border-top: 1px solid white;
+	border-bottom: 1px solid white;
+
+}
+
+#enlaces a:hover {
+
+	color: red;
+
+}
+
+h1,
+h2 {
+
+	font-family: 'Orbitron', sans-serif;
+
+}
+
+h2,
+.footer_link {
+
+	color: red;
+
+}
+
+/* ------------------- Titular ------------------- */
+
+#titular {
+
+	border-top: 1px solid red;
+	border-bottom: 1px solid red;
+	background-color: lightgrey;
+	padding-bottom: 2%;
+
+}
+
+#titular img,
+#texto_1 img,
+#texto_2 img {
+
+	float: left;
+
+}
+
+#titular p {
+
+	display: inline-block;
+	width: 75%;
+	margin-left: 1%;
+
+}
+
+/* ------------------- Index -> Textos/Contenido ------------------- */
+
+#contenido {
+
+	display: flex;
+	flex-direction: row;
+
+}
+
+#texto_1 {
+
+	margin-right: 5%;
+
+}
+
+#texto_2 {
+
+	margin-left: 5%;
+
+}
+
+/* ------------------- Galería ------------------- */
+
+th {
+
+	font-weight: bold;
+	background-color: lightgray;
+
+}
+
+td img {
+
+	display: block;
+
+}
+
+td {
+
+	text-align: center;
+
+}
+
+/* ------------------- Contacto ------------------- */
+
+form {
+
+	background-color: lightgrey;
+	border: 1px solid black;
+	margin: 5%;
+	font-weight: bold;
+
+}
+
+form img {
+
+	float: right;
+	margin-right: 5%;
+
+}
+
+label,
+input[type="radio"] {
+
+	margin-left: 2%;
+
+}
+
+input,
+select {
+
+	margin-top: 2%;
+
+}
+
+#label_sugerencias {
+
+	position: relative;
+	top: -8em;
+
+}
+
+textarea {
+
+	margin-top: 2%;
+	margin-left: 5%;
+
+}
+
+button {
+
+	border: 1px solid red;
+	background-color: white;
+	font-weight: bold;
+	font-size: 110%;
+	padding: 0.5% 1.7%;
+	margin: 5%;
+
+}
+
+/* ------------------- Footer ------------------- */
+
+footer {
+
+	background-color: black;
+	color: white;
+	text-align: center;
+	position: relative;
+	bottom: 0;
+
+}
