@@ -1,0 +1,3 @@
+Kevin|Alumno1|01
+Imanol|Alumno2|02
+Ander|Alumno3|03
