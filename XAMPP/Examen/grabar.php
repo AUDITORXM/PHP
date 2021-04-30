@@ -95,7 +95,7 @@ function mandarCorreo($correo, $nombre, $apellido, $token, $id){
 	$mail->Port = 587;
 	$mail->SMTPAuth = true;
 	$mail->Username = 'kblancocampandegui@gmail.com';
-	$mail->Password = 'TrabajoDeCosas';
+	$mail->Password = '***';
 	$mail->setFrom('kblancocampandegui@gmail.com', 'Kevin Blanco');
 	$mail->addAddress($correo, $nombre . " " . $apellido);
 	$mail->Subject = 'Activar Cuenta';

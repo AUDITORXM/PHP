@@ -9,7 +9,7 @@
 	$mail->Port = 587;
 	$mail->SMTPAuth = true;
 	$mail->Username = 'kblancocampandegui@gmail.com';
-	$mail->Password = 'TrabajoDeCosas';
+	$mail->Password = '***';
 	$mail->setFrom('kblancocampandegui@gmail.com', 'Kevin Blanco');
 	$mail->addReplyTo('kblancocampandegui@gmail.com', 'Kevin Blanco');
 	$mail->addAddress('kblancocampandegui@gmail.com', 'Kevin Blanco');
