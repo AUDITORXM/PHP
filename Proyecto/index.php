@@ -1,6 +1,7 @@
 <?php
 include('includes/inc_config.php');
-include('includes/inc_cabecera.php');?>
+include('includes/inc_cabecera.php');
+include('includes/db.php');?>
 
 <div id="carrusel_pelis" class="carousel slide" data-bs-ride="carousel">
 	<div class="carousel-indicators">
@@ -11,16 +12,18 @@ include('includes/inc_cabecera.php');?>
 	</div>
 	<div class="carousel-inner">
 		<?php
-			include('includes/db.php');
-
-			$query = 'SELECT Nombre, Imagen FROM Peliculas ORDER BY Fecha DESC LIMIT 4';
+			$query = 'SELECT id, titulo, imagen FROM Peliculas WHERE activo = 1 ORDER BY fecha_estreno DESC LIMIT 4';
+			$activo = 1;
 
 			foreach($con->query($query) as $fila) {
-
-				echo "<div class='carousel-item active'>";
-				echo	"<img src='" . $fila['Imagen'] . "' class='d-block w-100' alt='Imagen_Carrusel_" . $fila['Nombre'] . "'>";
+				if ($activo == 1) {
+					echo "<div class='carousel-item active'>";
+					$activo = 0;
+				} else {
+					echo "<div class='carousel-item'>";
+				}
+				echo "<a href='mostrarPeli.php?id=" . $fila['id'] . "'><img src='img/" . $fila['imagen'] . "' class='rounded mx-auto d-block w-25' alt='Imagen_Carrusel_" . $fila['titulo'] . "'></a>";
 				echo "</div>";
-
 			}
 		?>
 	</div>
@@ -34,47 +37,53 @@ include('includes/inc_cabecera.php');?>
 	</button>
 </div>
 
-<h2 class="mx-auto bg-success">EN CARTELERA</h2>
+<br><h2 class="bg-success text-center">EN CARTELERA</h2><br>
 
-<form action="" method="post">
+<!-- <form action="" method="post">
 	<label for="fechafiltro">Fecha:</label>
-	<select name="fechafiltro" id="fechafiltro">
+	<select name="fechafiltro" id="fechafiltro"> -->
 
 	<?php
-		$query = 'SELECT DISTINCT Fecha FROM Peliculas ORDER BY Fecha DESC';
+		// $query = 'SELECT DISTINCT fecha_estreno FROM Peliculas GROUP BY fecha_estreno ORDER BY fecha_estreno DESC';
 
-		foreach($con->query($query) as $fila) {
+		// foreach($con->query($query) as $fila) {
 
-			echo "<option value='" . $fila['Fecha'] . "'>" . $fila['Fecha'] . "</option>";
+		// 	echo "<option value='" . $fila['fecha_estreno'] . "'>" . $fila['fecha_estreno'] . "</option>";
 
-		}
+		// }
 	?>
-	</select>
+	<!-- </select>
 	<button type="submit" class="btn btn-primary" id="filtrar">Filtrar</button>
-</form>
+</form> -->
 
+<div class="row row-cols-1 row-cols-md-2 g-4">
 <?php
-	$query = 'SELECT Nombre, Imagen FROM Peliculas ORDER BY Fecha DESC';
+	$query = 'SELECT Peliculas.id AS id, titulo, duracion, Generos.nombre AS genero, imagen
+				FROM Peliculas, Pelis_Generos, Generos
+				WHERE Peliculas.id = Pelis_Generos.pelicula AND Generos.id = Pelis_Generos.genero AND Peliculas.activo = 1
+				GROUP BY Peliculas.id
+				ORDER BY fecha_estreno DESC';
 
 	foreach($con->query($query) as $fila) {
 
-		echo "<div class='card' style='width: 18rem;'>";
-		echo	"<img src='" . $fila['Imagen'] . "' class='card-img-top' alt='Imagen_" . $fila['Nombre'] . "'>";
+		echo "<div class='card rounded mx-auto d-block' style='width: 18rem;'>";
+		echo	"<a href='mostrarPeli.php?id=" . $fila['id'] . "'><img src='img/" . $fila['imagen'] . "' class='card-img-top' alt='Imagen " . $fila['titulo'] . "'></a>";
 		echo	"<div class='card-body'>";
-		echo		"<h5 class='card-title'>" . $fila['Nombre'] . "</h5>";
+		echo		"<h5 class='card-title'>" . $fila['titulo'] . "</h5>";
 		echo	"</div>";
 		echo	"<ul class='list-group list-group-flush'>";
-		echo		"<li class='list-group-item'>" . $fila['Duracion'] . "</li>";
-		echo		"<li class='list-group-item'>" . $fila['Genero'] . "</li>";
+		echo		"<li class='list-group-item'>" . $fila['duracion'] . " minutos</li>";
+		echo		"<li class='list-group-item'>" . $fila['genero'] . "</li>";
 		echo 	"</ul>";
 		echo	"<div class='card-body'>";
-		echo		"<a href='' class='card-link'>Consultar Horario >></a>";
+		echo		"<a href='mostrarPeli.php?id=" . $fila['id'] . "' class='card-link'>Consultar Horario >></a>";
 		echo	"</div>";
 		echo "</div>";
 
 	}
 ?>
+</div>
 
-<h2 class="mx-auto bg-success">NOTICIAS Y NOVEDADES</h2>
+<br><h2 class="bg-success text-center">NOTICIAS Y NOVEDADES</h2><br>
 
 <?php include('includes/inc_pie.php');?>

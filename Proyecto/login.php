@@ -1,50 +1,61 @@
 <?php
 include('includes/inc_config.php');
 include('includes/inc_cabecera.php');
+include('includes/db.php');
+$mensajeError = "";
 
-$submit = "login";
-$submit_text = "Iniciar Sesión";
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
-if (isset($_GET['register']) && $_GET['register'] == 1){
+	$correo = $_POST['email'];
+	$pass = $_POST['password'];
+	$errores = array();
+	$coincide = FALSE;
 
-	$registro = TRUE;
-	$submit = "register";
-	$submit_text = "Registrarse";
+	// ----- Validar correo -----
+	if (filter_var($correo, FILTER_VALIDATE_EMAIL) === false) {
+		array_push($errores, "El correo no es un correo válido");
+	}
+
+	// ----- Validar si el usuario y contraseña son correctos -----
+	$query = "SELECT * FROM usuarios WHERE Correo = '" . $correo . "' AND password = '" . md5($pass) . "'";
+
+	foreach ($con->query($query) as $fila) {
+		$coincide = TRUE;
+	}
+	if (!$coincide) {
+		array_push($errores, "El usuario no coincide con la contraseña");
+	}
+
+	if(count($errores) == 0) {
+		$_SESSION['logeado'] = TRUE;
+		echo '<script>window.location.replace("index.php");</script>';
+	} else {
+		foreach ($errores as $error) {
+			$mensajeError = $error . "\n";
+		};
+	}
+} else if (isset($_SESSION['logeado']) && $_SESSION['logeado'] == TRUE) {
+
+	session_destroy();
+	echo '<script>window.location.replace("index.php");</script>';
 
 }
-
 ?>
 
-<div class="dropdown-menu">
-	<form class="px-4 py-3" action="server.php" method="POST">
-		<div class="mb-3">
-			<label for="nombre" class="form-label">Nombre de Usuario:</label>
-			<input type="text" class="form-control" id="nombre">
-		</div>
-		<div class="mb-3">
-			<label for="email" class="form-label">Correo:</label>
-			<input type="email" class="form-control" id="email" placeholder="email@ejemplo.com">
-		</div>
-		<div class="mb-3">
-			<label for="password" class="form-label">Contraseña:</label>
-			<input type="password" class="form-control" id="password" placeholder="Contraseña">
-		</div>
-		<div class="mb-3">
-			<div class="form-check">
-			<input type="checkbox" class="form-check-input" id="mantenersesion">
-			<label class="form-check-label" for="mantenersesion">Mantener sesión iniciada</label>
-			</div>
-		</div>
-		<button type="submit" class="btn btn-primary" value="<?php echo $submit;?>"><?php echo $submit_text;?></button>
-	</form>
-	<div class="dropdown-divider"></div>
-	<?php
-		if (!isset($_GET['register'])) {
+<h2 class="bg-success text-center">Iniciar Sesión</h2>
 
-	?>
-	<a class="dropdown-item" href="register.php?register=1">Eres nuevo? Regístrate aquí</a>
-		<?php } ?>
-	<!-- <a class="dropdown-item" href="forgotpass.php">Has olvidado la contraseña?</a> -->
-</div>
+<form class="px-4 py-3" action="" method="POST">
+	<div class="mb-3">
+		<label for="email" class="form-label">Correo:</label>
+		<input type="email" class="form-control" name="email" id="email" placeholder="email@ejemplo.com">
+	</div>
+	<div class="mb-3">
+		<label for="password" class="form-label">Contraseña:</label>
+		<input type="password" class="form-control" name="password" id="password" placeholder="Contraseña">
+	</div>
+	<button type="submit" class="btn btn-primary">Iniciar Sesión</button>
+</form>
+
+<?php echo $mensajeError;?>
 
 <?php include('includes/inc_pie.php');?>
