@@ -63,7 +63,7 @@ function mandarCorreo($correo, $nombre, $genero, $experiencia, $notificaciones, 
 	$mail->Port = 587;
 	$mail->SMTPAuth = true;
 	$mail->Username = 'kblancocampandegui@gmail.com';
-	$mail->Password = 'TrabajoDeCosas';
+	$mail->Password = '****';
 	$mail->setFrom($correo, $nombre);
 	$mail->addAddress('kblancocampandegui@gmail.com', 'Kevin Blanco');
 	$mail->Subject = 'Respuesta Formulario';
