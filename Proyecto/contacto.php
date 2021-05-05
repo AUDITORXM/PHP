@@ -6,7 +6,7 @@ include('includes/inc_config.php');
 include('includes/inc_cabecera.php');
 include('includes/db.php');
 
-$correo = $nombre = "";
+$correo = $nombre = $mensaje = "";
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
@@ -28,23 +28,26 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
 		$correo = $_POST['correo'];
 		$nombre = $_POST['nombre'];
-		$genero = $_POST['genero'];
+		$generos = array();
+		foreach ($_POST['genero'] as $genero) {
+			array_push($generos, $genero);
+		}
 		$comentario = $_POST['comentarios'];
-		$experiencia = $notificaciones = "Sin introducir";
+		$experiencia = $notificaciones = array();
 
 		if(isset($_POST['experiencia'])) {
 			foreach ($_POST['experiencia'] as $check) {
-				$experiencia = $check;
+				array_push($experiencia, $check);
 			}
 		}
 
 		if(isset($_POST['notificaciones'])) {
 			foreach ($_POST['notificaciones'] as $check) {
-				$notificaciones = $check;
+				array_push($notificaciones, $campo);
 			}
 		}
 
-		mandarCorreo($correo, $nombre, $genero, $experiencia, $notificaciones, $comentario);
+		mandarCorreo($correo, $nombre, $generos, $experiencia, $notificaciones, $comentario);
 
 	}
 
@@ -54,7 +57,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
 }
 
-function mandarCorreo($correo, $nombre, $genero, $experiencia, $notificaciones, $comentario) {
+function mandarCorreo($correo, $nombre, $generos, $experiencia, $notificaciones, $comentario) {
 
 	$mail = new PHPMailer;
 	$mail->isSMTP();
@@ -71,20 +74,23 @@ function mandarCorreo($correo, $nombre, $genero, $experiencia, $notificaciones, 
 				<p>Género(s) favorito(s):</p>
 				<ul>';
 
-	foreach ($genero as $check) {
+	foreach ($generos as $check) {
 		$mensaje .= '<li>' . $check . '</li>';
 	}
 
 	$mensaje .= '</ul>
-				<p>Experiencia en el sitio:' . $experiencia . '</p>
-				<p>Notificaciones activadas para:</p>
-				<ul>';
+				<p>Experiencia en el sitio:';
+	foreach ($experiencia as $exp) {
+		$mensaje .= $exp;
+	}
+
+	$mensaje .= '</p><p>Notificaciones activadas para:</p><ul>';
 
 	foreach ($notificaciones as $check) {
 		$mensaje .= '<li>' . $check . '</li>';
 	}
 
-	$mensaje .= '</ul>';
+	$mensaje .= '</ul><p>Comentario: ' . $comentario . '</p>';
 
 	$mail->msgHTML($mensaje);
 
@@ -97,7 +103,7 @@ function mandarCorreo($correo, $nombre, $genero, $experiencia, $notificaciones, 
 
 }?>
 
-<h2 class="mx-auto bg-success">Contacto</h2>
+<br><h2 class="bg-success text-center">Contáctanos</h2><br>
 
 <form name="form" action="" method="POST">
 	<div class="mb-3">
@@ -110,7 +116,7 @@ function mandarCorreo($correo, $nombre, $genero, $experiencia, $notificaciones, 
 	</div>
 	<div class="input-group mb-3">
 		<label class="input-group-text" for="genero">Géneros Favoritos:</label>
-		<select class="form-select" multiple name="genero" id="genero" required>
+		<select class="form-select" multiple name="genero[]" id="genero" required>
 			<?php
 				$query = 'SELECT DISTINCT nombre FROM Generos';
 				foreach($con->query($query) as $fila) {
@@ -122,23 +128,23 @@ function mandarCorreo($correo, $nombre, $genero, $experiencia, $notificaciones, 
 	<div class="mb-3">
 		<label class="form-label" for="experiencia">Tu experiencia en el sitio:</label>
 		<div class="form-check form-check-inline">
-			<input class="form-check-input" type="radio" name="experiencia[]" id="muymala" value="muymala">
+			<input class="form-check-input" type="radio" name="experiencia[]" id="muymala" value="Muy Mala">
 			<label class="form-check-label" for="muymala">Muy Mala</label>
 		</div>
 		<div class="form-check form-check-inline">
-			<input class="form-check-input" type="radio" name="experiencia[]" id="mala" value="mala">
+			<input class="form-check-input" type="radio" name="experiencia[]" id="mala" value="Mala">
 			<label class="form-check-label" for="mala">Mala</label>
 		</div>
 		<div class="form-check form-check-inline">
-			<input class="form-check-input" type="radio" name="experiencia[]" id="regular" value="regular">
+			<input class="form-check-input" type="radio" name="experiencia[]" id="regular" value="Regular">
 			<label class="form-check-label" for="regular">Regular</label>
 		</div>
 		<div class="form-check form-check-inline">
-			<input class="form-check-input" type="radio" name="experiencia[]" id="buena" value="buena">
+			<input class="form-check-input" type="radio" name="experiencia[]" id="buena" value="Buena">
 			<label class="form-check-label" for="buena">Buena</label>
 		</div>
 		<div class="form-check form-check-inline">
-			<input class="form-check-input" type="radio" name="experiencia[]" id="muybuena" value="muybuena">
+			<input class="form-check-input" type="radio" name="experiencia[]" id="muybuena" value="Muy Buena">
 			<label class="form-check-label" for="muybuena">Muy Buena</label>
 		</div>
 	</div>
