@@ -1,7 +1,7 @@
 <?php
 function getDatosPelicula($id, $token) {
 
-	$url = "https://api.themoviedb.org/3/movie/$id?api_key=$token";
+	$url = "https://api.themoviedb.org/3/movie/$id?api_key=$token&language=es-ES";
 	$resultado = file_get_contents($url);
 	$obj_pelicula = json_decode($resultado);
 
@@ -11,7 +11,8 @@ function getDatosPelicula($id, $token) {
 
 function buscarPelicula($titulo, $token) {
 
-	$url = "https://api.themoviedb.org/3/search/movie?api_key=$token&query=$titulo&page=1";
+	$titulo = urlencode($titulo);
+	$url = "https://api.themoviedb.org/3/search/movie?api_key=$token&query=$titulo&language=es-ES";
 	$resultado = file_get_contents($url);
 	$obj_pelicula = json_decode($resultado);
 
@@ -23,7 +24,7 @@ function getIdPelicula($titulo, $token) {
 
 	$obj_pelicula = buscarPelicula($titulo, $token);
 
-	$id_pelicula = "";
+	$id_pelicula = NULL;
 
 	foreach ($obj_pelicula->results as $pelicula) {
 		$id_pelicula = $pelicula->id;
@@ -44,32 +45,25 @@ function getIdPelicula($titulo, $token) {
 function getSinopsis($id, $token) {
 
 	$obj_pelicula = getDatosPelicula($id, $token);
-	$sinopsis = "";
-
-	foreach ($obj_pelicula as $pelicula) {
-		$sinopsis = $obj_pelicula->overview;
-	}
+	$sinopsis = $obj_pelicula->overview;
 
 	return $sinopsis;
 
 }
 
-// function getImagenPelicula($pelicula) {
+function getImagenPelicula($pelicula) {
 
-// 	$path_imagen = $pelicula->poster_path;
+	$path_imagen = $pelicula->poster_path;
 
-// 	$url_imagen = "https://image.tmdb.org/t/p/w500" . $path_imagen;
+	$url_imagen = "https://image.tmdb.org/t/p/w500" . $path_imagen;
 
-// 	return $url_imagen;
+	return $url_imagen;
 
-// }
+}
 
 function getActores($id, $token) {
 
-	$url = "https://api.themoviedb.org/3/movie/$id/credits?api_key=$token";
-	$resultado = file_get_contents($url);
-	$obj_cast = json_decode($resultado);
-
+	$obj_cast = getCast($id, $token);
 	$actores = array();
 
 	foreach ($obj_cast->cast as $cast) {
@@ -84,18 +78,26 @@ function getActores($id, $token) {
 
 }
 
-function getDirector($id, $token) {
+function getCast($id, $token){
 
 	$url = "https://api.themoviedb.org/3/movie/$id/credits?api_key=$token";
 	$resultado = file_get_contents($url);
 	$obj_cast = json_decode($resultado);
 
+	return $obj_cast;
+
+}
+
+function getDirector($id, $token) {
+
+	$obj_cast = getCast($id, $token);
+
 	$director = "";
 
-	foreach ($obj_cast->cast as $cast) {
+	foreach ($obj_cast->crew as $crew) {
 
-		if (isset($cast->job) && $cast->job === 'Director') {
-			$director = $cast->name;
+		if (isset($crew->job) && $crew->job === 'Director') {
+			$director = $crew->name;
 		}
 
 	}

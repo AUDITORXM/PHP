@@ -11,29 +11,26 @@ if (!isset($_GET['id'])) {
 } else {
 
 	$titulo = $sinopsis = $actores = $director = $clasificacion = $duracion = $generos = $fecha_estreno = "";
-	$array_actores = $array_generos = array();
+	$array_actores = array();
 
-	$query = "SELECT Peliculas.*, Generos.nombre AS genero
+	$query = "SELECT Peliculas.*, group_concat(Generos.nombre) AS generos
 				FROM Peliculas, Pelis_Generos, Generos
 				WHERE Peliculas.id = Pelis_Generos.pelicula AND Generos.id = Pelis_Generos.genero AND Peliculas.id =" . $_GET['id'] .
 				" GROUP BY Peliculas.id";
 
 	foreach ($con->query($query) as $fila) {
 
+		$fila['generos'] = explode(",", $fila['generos']);
+		$fila['generos'] = implode(", ", $fila['generos']);
+
 		$titulo = $fila['titulo'];
 		$sinopsis = getSinopsis($fila['id_tmdb'], $token);
 		$fecha_estreno = $fila['fecha_estreno'];
 		$duracion = $fila['duracion'];
 		$imagen = $fila['imagen'];
-		array_push($array_generos, $fila['genero']);
+		$generos = $fila['generos'];
 		$array_actores = getActores($fila['id_tmdb'], $token);
 		$director = getDirector($fila['id_tmdb'], $token);
-
-	}
-
-	foreach ($array_generos as $genero) {
-
-		$generos .= $genero . ", ";
 
 	}
 
@@ -51,10 +48,10 @@ if (!isset($_GET['id'])) {
 
 <div class="card mb-3 rounded mx-auto d-block" style="max-width: 540px;">
   <div class="row g-0">
-    <div class="col-md-4">
-      <img src="img/<?php echo $imagen;?>" class="img-fluid" alt="Imagen Película">
+    <div class="d-flex justify-content-evenly">
+      <img src="<?php echo $imagen;?>" class="img-fluid" alt="Imagen Película">
     </div>
-    <div class="col-md-8">
+    <div class="d-flex justify-content-evenly">
       <div class="card-body">
         <p class="card-text"><strong>Título:</strong> <?php echo $titulo?></p>
 		<p class="card-text"><strong>Sinopsis:</strong> <?php echo $sinopsis?></p>

@@ -22,7 +22,7 @@ include('includes/db.php');?>
 				} else {
 					echo "<div class='carousel-item'>";
 				}
-				echo "<a href='mostrarPeli.php?id=" . $fila['id'] . "'><img src='img/" . $fila['imagen'] . "' class='rounded mx-auto d-block w-25' alt='Imagen_Carrusel_" . $fila['titulo'] . "'></a>";
+				echo "<a href='mostrarPeli.php?id=" . $fila['id'] . "'><img src='" . $fila['imagen'] . "' class='rounded mx-auto d-block w-25' alt='Imagen_Carrusel_" . $fila['titulo'] . "'></a>";
 				echo "</div>";
 			}
 		?>
@@ -39,41 +39,32 @@ include('includes/db.php');?>
 
 <br><h2 class="bg-success text-center">EN CARTELERA</h2><br>
 
-<!-- <form action="" method="post">
-	<label for="fechafiltro">Fecha:</label>
-	<select name="fechafiltro" id="fechafiltro"> -->
-
-	<?php
-		// $query = 'SELECT DISTINCT fecha_estreno FROM Peliculas GROUP BY fecha_estreno ORDER BY fecha_estreno DESC';
-
-		// foreach($con->query($query) as $fila) {
-
-		// 	echo "<option value='" . $fila['fecha_estreno'] . "'>" . $fila['fecha_estreno'] . "</option>";
-
-		// }
-	?>
-	<!-- </select>
-	<button type="submit" class="btn btn-primary" id="filtrar">Filtrar</button>
-</form> -->
-
 <div class="row row-cols-1 row-cols-md-2 g-4">
 <?php
-	$query = 'SELECT Peliculas.id AS id, titulo, duracion, Generos.nombre AS genero, imagen
-				FROM Peliculas, Pelis_Generos, Generos
-				WHERE Peliculas.id = Pelis_Generos.pelicula AND Generos.id = Pelis_Generos.genero AND Peliculas.activo = 1
-				GROUP BY Peliculas.id
-				ORDER BY fecha_estreno DESC';
+	$query = 'SELECT Peliculas.id, titulo, duracion, imagen, group_concat(Generos.nombre) as generos
+			FROM Peliculas
+			INNER JOIN Pelis_Generos ON Pelis_Generos.pelicula = Peliculas.id
+			INNER JOIN Generos ON Pelis_Generos.genero = Generos.id
+			WHERE activo = 1
+			GROUP BY Peliculas.id, Peliculas.titulo
+			ORDER BY Peliculas.Fecha_estreno DESC';
 
 	foreach($con->query($query) as $fila) {
 
+		// ----- COMO AL HACER EL GROUP_CONCAT EN LA CONSULTA DEVUELVE LOS GÉNEROS SIN ESPACIOS, AÑADO LOS ESPACIOS CON EL IMPLODE -----
+		$fila['generos'] = explode(",", $fila['generos']);
+		$fila['generos'] = implode(", ", $fila['generos']);
+
 		echo "<div class='card rounded mx-auto d-block' style='width: 18rem;'>";
-		echo	"<a href='mostrarPeli.php?id=" . $fila['id'] . "'><img src='img/" . $fila['imagen'] . "' class='card-img-top' alt='Imagen " . $fila['titulo'] . "'></a>";
+		echo	"<a href='mostrarPeli.php?id=" . $fila['id'] . "'>
+					<img src='" . $fila['imagen'] . "' class='card-img-top' alt='Imagen " . $fila['titulo'] . "'>
+				</a>";
 		echo	"<div class='card-body'>";
 		echo		"<h5 class='card-title'>" . $fila['titulo'] . "</h5>";
 		echo	"</div>";
 		echo	"<ul class='list-group list-group-flush'>";
 		echo		"<li class='list-group-item'>" . $fila['duracion'] . " minutos</li>";
-		echo		"<li class='list-group-item'>" . $fila['genero'] . "</li>";
+		echo		"<li class='list-group-item'>" . $fila['generos'] . "</li>";
 		echo 	"</ul>";
 		echo	"<div class='card-body'>";
 		echo		"<a href='mostrarPeli.php?id=" . $fila['id'] . "' class='card-link'>Consultar Horario >></a>";
@@ -83,7 +74,5 @@ include('includes/db.php');?>
 	}
 ?>
 </div>
-
-<br><h2 class="bg-success text-center">NOTICIAS Y NOVEDADES</h2><br>
 
 <?php include('includes/inc_pie.php');?>
